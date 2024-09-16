@@ -1,0 +1,110 @@
+import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ShamirSecretSharing {
+    // Function to decode a value from a given base
+    public static int decodeValue(String valueStr, int base) {
+        return Integer.parseInt(valueStr, base);
+    }
+
+    // Function to perform Lagrange interpolation and find the constant term
+    public static double lagrangeInterpolation(List<Point> points) {
+        double constantTerm = 0;
+
+        for (int i = 0; i < points.size(); i++) {
+            double yi = points.get(i).y;
+            double li = basisPolynomial(i, 0, points);
+            constantTerm += yi * li;  // We want P(0) for the constant term
+        }
+
+        return constantTerm;
+    }
+
+    // Helper function to calculate the basis polynomial l_i(0)
+    private static double basisPolynomial(int i, int xValue, List<Point> points) {
+        double xi = points.get(i).x;
+        double result = 1;
+
+        for (int j = 0; j < points.size(); j++) {
+            if (i != j) {
+                double xj = points.get(j).x;
+                result *= (xValue - xj) / (xi - xj);
+            }
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        // Read and parse the input JSON
+        String inputJson = "{\n" +
+                "    \"keys\": {\n" +
+                "        \"n\": 4,\n" +
+                "        \"k\": 3\n" +
+                "    },\n" +
+                "    \"1\": {\n" +
+                "        \"base\": \"10\",\n" +
+                "        \"value\": \"4\"\n" +
+                "    },\n" +
+                "    \"2\": {\n" +
+                "        \"base\": \"2\",\n" +
+                "        \"value\": \"111\"\n" +
+                "    },\n" +
+                "    \"3\": {\n" +
+                "        \"base\": \"10\",\n" +
+                "        \"value\": \"12\"\n" +
+                "    },\n" +
+                "    \"6\": {\n" +
+                "        \"base\": \"4\",\n" +
+                "        \"value\": \"213\"\n" +
+                "    }\n" +
+                "}";
+
+        // Parse the input JSON
+        JSONObject data = new JSONObject(inputJson);
+
+        // Extract n and k values
+        JSONObject keys = data.getJSONObject("keys");
+        int n = keys.getInt("n");
+        int k = keys.getInt("k");
+
+        // Extract the points and decode the y values
+        List<Point> points = new ArrayList<>();
+        for (String key : data.keySet()) {
+            if (isNumeric(key)) {
+                int x = Integer.parseInt(key);  // The key is the x value
+                JSONObject pointData = data.getJSONObject(key);
+                int base = Integer.parseInt(pointData.getString("base"));  // The base
+                String yEncoded = pointData.getString("value");  // Encoded y value
+                int y = decodeValue(yEncoded, base);  // Decode the y value
+                points.add(new Point(x, y));
+            }
+        }
+
+        // Ensure we have at least k points for Lagrange interpolation
+        if (points.size() >= k) {
+            // Use Lagrange interpolation to find the constant term (P(0))
+            double constantTerm = lagrangeInterpolation(points.subList(0, k));
+            System.out.println("The constant term (c) of the polynomial is: " + constantTerm);
+        } else {
+            System.out.println("Not enough points provided to solve for the polynomial.");
+        }
+    }
+
+    // Helper function to check if a string is numeric
+    public static boolean isNumeric(String str) {
+        return str.matches("\\d+");
+    }
+}
+
+// Class to represent a point (x, y)
+class Point {
+    int x;
+    double y;
+
+    public Point(int x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+}
