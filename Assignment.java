@@ -4,8 +4,8 @@ import java.util.List;
 
 public class ShamirSecretSharing {
     // Function to decode a value from a given base
-    public static int decodeValue(String valueStr, int base) {
-        return Integer.parseInt(valueStr, base);
+    public static long decodeValue(String valueStr, int base) {
+        return Long.parseLong(valueStr, base);
     }
 
     // Function to perform Lagrange interpolation and find the constant term
@@ -40,24 +40,44 @@ public class ShamirSecretSharing {
         // Read and parse the input JSON
         String inputJson = "{\n" +
                 "    \"keys\": {\n" +
-                "        \"n\": 4,\n" +
-                "        \"k\": 3\n" +
+                "        \"n\": 9,\n" +
+                "        \"k\": 6\n" +
                 "    },\n" +
                 "    \"1\": {\n" +
                 "        \"base\": \"10\",\n" +
-                "        \"value\": \"4\"\n" +
+                "        \"value\": \"28735619723837\"\n" +
                 "    },\n" +
                 "    \"2\": {\n" +
-                "        \"base\": \"2\",\n" +
-                "        \"value\": \"111\"\n" +
+                "        \"base\": \"16\",\n" +
+                "        \"value\": \"1A228867F0CA\"\n" +
                 "    },\n" +
                 "    \"3\": {\n" +
-                "        \"base\": \"10\",\n" +
-                "        \"value\": \"12\"\n" +
+                "        \"base\": \"12\",\n" +
+                "        \"value\": \"32811A4AA0B7B\"\n" +
+                "    },\n" +
+                "    \"4\": {\n" +
+                "        \"base\": \"11\",\n" +
+                "        \"value\": \"917978721331A\"\n" +
+                "    },\n" +
+                "    \"5\": {\n" +
+                "        \"base\": \"16\",\n" +
+                "        \"value\": \"1A22886782E1\"\n" +
                 "    },\n" +
                 "    \"6\": {\n" +
-                "        \"base\": \"4\",\n" +
-                "        \"value\": \"213\"\n" +
+                "        \"base\": \"10\",\n" +
+                "        \"value\": \"28735619654702\"\n" +
+                "    },\n" +
+                "    \"7\": {\n" +
+                "        \"base\": \"14\",\n" +
+                "        \"value\": \"71AB5070CC4B\"\n" +
+                "    },\n" +
+                "    \"8\": {\n" +
+                "        \"base\": \"9\",\n" +
+                "        \"value\": \"122662581541670\"\n" +
+                "    },\n" +
+                "    \"9\": {\n" +
+                "        \"base\": \"8\",\n" +
+                "        \"value\": \"642121030037605\"\n" +
                 "    }\n" +
                 "}";
 
@@ -77,7 +97,7 @@ public class ShamirSecretSharing {
                 JSONObject pointData = data.getJSONObject(key);
                 int base = Integer.parseInt(pointData.getString("base"));  // The base
                 String yEncoded = pointData.getString("value");  // Encoded y value
-                int y = decodeValue(yEncoded, base);  // Decode the y value
+                long y = decodeValue(yEncoded, base);  // Decode the y value
                 points.add(new Point(x, y));
             }
         }
